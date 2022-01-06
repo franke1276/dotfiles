@@ -9,7 +9,7 @@ Plug 'hrsh7th/nvim-cmp'
 Plug 'vim-airline/vim-airline'
 
 " NeoSolarized 
-Plug 'overcache/NeoSolarized'
+"Plug 'overcache/NeoSolarized'
 
 " LSP completion source for nvim-cmp
 Plug 'hrsh7th/cmp-nvim-lsp'
@@ -37,7 +37,8 @@ Plug 'nvim-telescope/telescope.nvim'
 
 " Color scheme used in the GIFs!
 Plug 'arcticicestudio/nord-vim'
-
+Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'scrooloose/nerdtree'
 call plug#end()
 " Set completeopt to have a better completion experience
 " :help completeopt
@@ -126,10 +127,24 @@ cmp.setup({
     { name = 'buffer' },
   },
 })
+
+
+local actions = require("telescope.actions")
+require("telescope").setup{
+  defaults = {
+    mappings = {
+      i = {
+      },
+    },
+  }
+}
+
 EOF
 
 
-nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.definition()<CR>
+let g:python3_host_prog  = '/usr/local/bin/python3'
+
+nnoremap <silent> gd <cmd>lua vim.lsp.buf.definition()<CR>
 nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
 nnoremap <silent> gD    <cmd>lua vim.lsp.buf.implementation()<CR>
 nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
@@ -140,6 +155,9 @@ nnoremap <silent> gW    <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
 nnoremap <silent> gd    <cmd>lua vim.lsp.buf.definition()<CR>
 
 nnoremap <silent> ga    <cmd>lua vim.lsp.buf.code_action()<CR>
+
+
+
 
 " Set updatetime for CursorHold
 " 300ms of no cursor movement to trigger CursorHold
@@ -152,8 +170,12 @@ autocmd CursorHold * lua vim.diagnostic.open_float()
 " this removes the jitter when warnings/errors flow in
 
 set signcolumn=yes
-let mapleader = ","
-let g:mapleader = ","
+
+
+" set leader to space
+let mapleader = " "
+let g:mapleader = " "
+nnoremap <SPACE> <Nop>
 
 " telescope
 nnoremap <leader>ff <cmd>lua require('telescope.builtin').find_files()<cr>
@@ -161,6 +183,9 @@ nnoremap <leader>fg <cmd>lua require('telescope.builtin').live_grep()<cr>
 nnoremap <leader>fd <cmd>lua require('telescope.builtin').grep_string()<cr>
 nnoremap <leader>fb <cmd>lua require('telescope.builtin').buffers()<cr>
 nnoremap <leader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>
+
+nnoremap <silent> <leader>nt :NERDTreeToggle<CR>
+nnoremap <silent> <leader>nf :NERDTreeFind<CR>
 
 " Set to auto read when a file is changed from the outside
 set autoread
@@ -170,14 +195,6 @@ set autoread
   " Fast saving
 nmap <leader>w :w!<cr>
 
-nnoremap <leader>el :ElmEvalLine<CR>
-vnoremap <leader>es :<C-u>ElmEvalSelection<CR>
-nnoremap <leader>em :ElmMakeCurrentFile<CR>
-"autocmd BufWritePost *.elm ElmMakeCurrentFile
-"autocmd BufWritePost *.elm ElmMakeFile("Main.elm")
-
-map <C-d> Yp
-
 set rnu
 set nu
 noremap <Up> <NOP>
@@ -185,8 +202,7 @@ noremap <Down> <NOP>
 noremap <Left> <NOP>
 noremap <Right> <NOP>
 
-map <Right>:bn <CR>
-map <Left> :bp <CR>
+map <tab>:bn <CR>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -248,8 +264,8 @@ set tm=500
 " Enable syntax highlighting
 
 syntax enable
-set background=dark
-colorscheme NeoSolarized
+set background=light
+"colorscheme NeoSolarized
 
 " Set extra options when running in GUI mode
 if has("gui_running")
@@ -314,8 +330,6 @@ map j gj
 map k gk
 
 " Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search)
-map <space> /
-map <c-space> ?
 
 " Disable highlight when <leader><cr> is pressed
 map <silent> <leader><cr> :noh<cr>
@@ -337,6 +351,7 @@ map <leader>tn :tabnew<cr>
 map <leader>to :tabonly<cr>
 map <leader>tc :tabclose<cr>
 map <leader>tm :tabmove
+map <leader>fvd :e ~/.config/nvim/init.vim <CR>
 
 " Opens a new tab with the current buffer's path
 " Super useful when editing files in the same directory
