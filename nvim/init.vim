@@ -46,6 +46,13 @@ Plug 'elixir-editors/vim-elixir'
 Plug 'onsails/lspkind-nvim'
 " Color scheme used in the GIFs!
 Plug 'arcticicestudio/nord-vim'
+
+" unit tests
+Plug 'vim-test/vim-test'
+"git
+Plug 'tpope/vim-fugitive'
+" projects
+Plug 'nvim-telescope/telescope-project.nvim'
 call plug#end()
 " Set completeopt to have a better completion experience
 " :help completeopt
@@ -63,6 +70,12 @@ set shortmess+=c
 
 
 lua <<EOF
+
+
+
+local on_attach = function(_, bufnr)
+   vim.cmd [[ autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]]
+end
 local nvim_lsp = require'lspconfig'
 
 local opts = {
@@ -81,7 +94,7 @@ local opts = {
     -- see https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#rust_analyzer
     server = {
         -- on_attach is a callback called when the language server attachs to the buffer
-        -- on_attach = on_attach,
+        on_attach = on_attach,
         settings = {
             -- to enable rust-analyzer settings visit:
             -- https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/user/generated_config.adoc
@@ -152,7 +165,7 @@ require("telescope").setup{
     },
   }
 }
-
+require'telescope'.load_extension('project')
 EOF
 
 
@@ -183,7 +196,7 @@ local on_attach = function(_, bufnr)
   -- These have a different style than above because I was fiddling
   -- around and never converted them. Instead of converting them
   -- now, I'm leaving them as they are for this article because this is
-  -- what I actually use, and hey, it works ¯\_(ツ)_/¯.
+  -- what I actually use, and hey, it works ¬Ø\_(„ÉÑ)_/¬Ø.
   vim.cmd [[imap <expr> <C-l> vsnip#available(1) ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>']]
   vim.cmd [[smap <expr> <C-l> vsnip#available(1) ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>']]
 
@@ -226,14 +239,19 @@ lspconfig.elixirls.setup({
 })
 lspconfig.efm.setup({
   capabilities = capabilities,
-  on_attach = on_attach,
+ -- on_attach = on_attach,
   filetypes = {"elixir"}
 })
 EOF
 set clipboard=unnamedplus
 set ttyfast
+set splitright
+let g:NERDCreateDefaultMappings = 1
 
 let g:python3_host_prog  = '/usr/local/bin/python3'
+let mapleader = " "
+let g:mapleader = " "
+
 
 nnoremap <silent> gd <cmd>lua vim.lsp.buf.definition()<CR>
 nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
@@ -244,12 +262,12 @@ nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
 nnoremap <silent> g0    <cmd>lua vim.lsp.buf.document_symbol()<CR>
 nnoremap <silent> gW    <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
 nnoremap <silent> gd    <cmd>lua vim.lsp.buf.definition()<CR>
-
+nnoremap <silent> gf    <cmd>lua vim.lsp.buf.formatting_sync()<CR>
 nnoremap <silent> ga    <cmd>lua vim.lsp.buf.code_action()<CR>
+nnoremap <silent> gx    <cmd>lua echo ("hallo")<CR>
 
-nnoremap <silent> df    <cmd>vim.lsp.buf.formatting()<CR>
-nnoremap <silent> dt    <cmd>vim.lsp.diagnostic.show_line_diagnostics()<CR>
 
+"autocmd BufWritePre <buffer> lua echo("hallo")<CR>
 
 
 
@@ -257,7 +275,7 @@ nnoremap <silent> dt    <cmd>vim.lsp.diagnostic.show_line_diagnostics()<CR>
 " 300ms of no cursor movement to trigger CursorHold
 set updatetime=300
 " Show diagnostic popup on cursor hold
-autocmd CursorHold * lua vim.diagnostic.open_float()
+""autocmd CursorHold * lua vim.diagnostic.open_float()
 
 
 " have a fixed column for the diagnostics to appear in
@@ -267,10 +285,14 @@ set signcolumn=yes
 
 
 " set leader to space
-let mapleader = " "
-let g:mapleader = " "
+" unit testing
+let g:test#neovim#start_normal = 1 " If using neovim strategy
+let g:test#basic#start_normal = 1 " If using basic strategy
+let g:test#echo_command = 0
+
 nnoremap <SPACE> <Nop>
 
+nnoremap <silent> <leader>fx :lua require('config.telescope').switch_projects()<CR>
 " telescope
 nnoremap <leader>ff <cmd>lua require('telescope.builtin').find_files()<cr>
 nnoremap <leader>fg <cmd>lua require('telescope.builtin').live_grep()<cr>
@@ -282,7 +304,10 @@ nnoremap <silent> <leader>nt :NERDTreeToggle<CR>
 nnoremap <silent> <leader>nf :NERDTreeFind<CR>
 nnoremap <silent> <S-Tab> :b#<CR>
 
-
+" testing
+nnoremap <silent> <leader>t :TestNearest<CR>
+nnoremap <silent> <leader>T :TestFile<CR>
+tmap <C-o> <C-\><C-n>
 " Set to auto read when a file is changed from the outside
 set autoread
 " With a map leader it's possible to do extra key combinations
@@ -361,6 +386,8 @@ set tm=500
 syntax enable
 set background=dark
 colorscheme NeoSolarized
+
+hi MatchParen guifg=red guibg=none
 
 " Set extra options when running in GUI mode
 if has("gui_running")
@@ -442,12 +469,13 @@ map <leader>bd :Bclose<cr>
 map <leader>ba :1,1000 bd!<cr>
 
 " Useful mappings for managing tabs
+map <leader>th :tabnext<cr>
+map <leader>tl :tabprevious<cr>
 map <leader>tn :tabnew<cr>
 map <leader>to :tabonly<cr>
 map <leader>tc :tabclose<cr>
 map <leader>tm :tabmove
 map <leader>fvd :e ~/.config/nvim/init.vim <CR>
-
 " Opens a new tab with the current buffer's path
 " Super useful when editing files in the same directory
 map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
@@ -470,6 +498,7 @@ autocmd BufReadPost *
 " Remember info about open buffers on close
 set viminfo^=%
 
+autocmd BufWritePre <buffer> lua print("vim.lsp.buf.formatting_sync()")<CR>
 
 """"""""""""""""""""""""""""""
 " => Status line
@@ -586,4 +615,3 @@ function! <SID>BufcloseCloseIt()
      execute("bdelete! ".l:currentBufNum)
    endif
 endfunction
-
