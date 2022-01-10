@@ -53,6 +53,9 @@ Plug 'vim-test/vim-test'
 Plug 'tpope/vim-fugitive'
 " projects
 Plug 'nvim-telescope/telescope-project.nvim'
+" change project root
+Plug 'airblade/vim-rooter'
+
 call plug#end()
 " Set completeopt to have a better completion experience
 " :help completeopt
@@ -219,7 +222,7 @@ let g:NERDCreateDefaultMappings = 1
 let g:python3_host_prog  = '/usr/local/bin/python3'
 let mapleader = " "
 let g:mapleader = " "
-
+let g:test#runner_commands = ['ExUnit']
 
 nnoremap <silent> gd <cmd>lua vim.lsp.buf.definition()<CR>
 nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
@@ -356,7 +359,6 @@ syntax enable
 set background=dark
 colorscheme NeoSolarized
 
-hi MatchParen guifg=red guibg=none
 
 " Set extra options when running in GUI mode
 if has("gui_running")
@@ -467,7 +469,6 @@ autocmd BufReadPost *
 " Remember info about open buffers on close
 set viminfo^=%
 
-autocmd BufWritePre <buffer> lua print("vim.lsp.buf.formatting_sync()")<CR>
 
 """"""""""""""""""""""""""""""
 " => Status line
@@ -525,6 +526,7 @@ map <leader>n :cn<cr>
 map <leader>p :cp<cr>
 " Toggle paste mode on and off
 map <leader>pp :setlocal paste!<cr>
+hi MatchParen guifg=red guibg=none
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
