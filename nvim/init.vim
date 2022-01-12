@@ -54,8 +54,9 @@ Plug 'tpope/vim-fugitive'
 " projects
 Plug 'nvim-telescope/telescope-project.nvim'
 " change project root
-Plug 'airblade/vim-rooter'
-
+"Plug 'airblade/vim-rooter'
+" sessions
+"Plug 'rmagatti/auto-session'
 call plug#end()
 " Set completeopt to have a better completion experience
 " :help completeopt
@@ -265,6 +266,7 @@ nnoremap <SPACE> <Nop>
 
 nnoremap <silent> <leader>fx :lua require('config.telescope').switch_projects()<CR>
 nnoremap <silent> <leader>fp <cmd>Telescope project<CR>
+vnoremap <leader>fv "zy:Telescope live_grep default_text=<C-r>z<cr>
 " telescope
 nnoremap <leader>ff <cmd>lua require('telescope.builtin').find_files()<cr>
 nnoremap <leader>fg <cmd>lua require('telescope.builtin').live_grep()<cr>
@@ -356,7 +358,7 @@ set tm=500
 " Enable syntax highlighting
 
 syntax enable
-set background=dark
+set background=light
 colorscheme NeoSolarized
 
 
