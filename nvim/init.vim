@@ -3,9 +3,7 @@ call plug#begin()
  Plug 'ryanoasis/vim-devicons'
  Plug 'SirVer/ultisnips'
  Plug 'honza/vim-snippets'
- Plug 'scrooloose/nerdtree'
- Plug 'preservim/nerdcommenter'
- Plug 'mhinz/vim-startify'
+ Plug 'justinmk/vim-sneak'
 
 " Collection of common configurations for the Nvim LSP client
 Plug 'neovim/nvim-lspconfig'
@@ -28,8 +26,6 @@ Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-buffer'
 
-" See hrsh7th's other plugins for more completion sources!
-
 " To enable more of the features of rust-analyzer, such as inlay hints and more!
 Plug 'simrat39/rust-tools.nvim'
 
@@ -37,11 +33,15 @@ Plug 'simrat39/rust-tools.nvim'
 Plug 'hrsh7th/vim-vsnip'
 
 " Fuzzy finder
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 " Optional
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim'
+"
+" for jump directly to file:line
 Plug 'wsdjeg/vim-fetch'
+
 Plug 'elixir-editors/vim-elixir'
 Plug 'onsails/lspkind-nvim'
 " Color scheme used in the GIFs!
@@ -52,9 +52,9 @@ Plug 'vim-test/vim-test'
 "git
 Plug 'tpope/vim-fugitive'
 " projects
-Plug 'nvim-telescope/telescope-project.nvim'
+" Plug 'nvim-telescope/telescope-project.nvim'
 " change project root
-"Plug 'airblade/vim-rooter'
+Plug 'airblade/vim-rooter'
 " sessions
 "Plug 'rmagatti/auto-session'
 call plug#end()
@@ -80,17 +80,38 @@ lua <<EOF
 local on_attach = function(_, bufnr)
    vim.cmd [[ autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]]
 end
-local nvim_lsp = require'lspconfig'
+local lspconfig = require("lspconfig")
 
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities.textDocument.completion.completionItem.snippetSupport = true
+
+-- A callback that will get called when a buffer connects to the language server.
+-- Here we create any key maps that we want to have on that buffer.
+
+-- Finally, let's initialize the Elixir language server
+
+-- Replace the following with the path to your installation
+local path_to_elixirls = vim.fn.expand("~/workspace/elixir-ls/release/language_server.sh")
+
+lspconfig.elixirls.setup({
+  cmd = {path_to_elixirls},
+  capabilities = capabilities,
+  on_attach = on_attach,
+  settings = {
+    elixirLS = {
+      -- I choose to disable dialyzer for personal reasons, but
+      -- I would suggest you also disable it unless you are well
+      -- aquainted with dialzyer and know how to use it.
+      dialyzerEnabled = false,
+      -- I also choose to turn off the auto dep fetching feature.
+      -- It often get's into a weird state that requires deleting
+      -- the .elixir_ls directory and restarting your editor.
+      fetchDeps = false
+    }
+  }
+})
 local opts = {
     tools = { -- rust-tools options
-        autoSetHints = true,
-        hover_with_actions = true,
-        inlay_hints = {
-            show_parameter_hints = false,
-            parameter_hints_prefix = "",
-            other_hints_prefix = "",
-        },
     },
 
     -- all the opts to send to nvim-lspconfig
@@ -113,6 +134,12 @@ local opts = {
 }
 
 require('rust-tools').setup(opts)
+
+lspconfig.efm.setup({
+  capabilities = capabilities,
+ -- on_attach = on_attach,
+  filetypes = {"elixir"}
+})
 EOF
 
 " Setup Completion
@@ -160,72 +187,22 @@ cmp.setup({
 })
 
 
-local actions = require("telescope.actions")
-require("telescope").setup{
-  defaults = {
-    mappings = {
-      i = {
-      },
-    },
-  }
-}
-require'telescope'.load_extension('project')
 EOF
 
 
-lua <<EOF
-local lspconfig = require("lspconfig")
-
--- Neovim doesn't support snippets out of the box, so we need to mutate the
--- capabilities we send to the language server to let them know we want snippets.
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities.textDocument.completion.completionItem.snippetSupport = true
-
--- A callback that will get called when a buffer connects to the language server.
--- Here we create any key maps that we want to have on that buffer.
-
--- Finally, let's initialize the Elixir language server
-
--- Replace the following with the path to your installation
-local path_to_elixirls = vim.fn.expand("~/workspace/elixir-ls/release/language_server.sh")
-local on_attach = function(_, bufnr)
-   vim.cmd [[ autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]]
-end
-
-lspconfig.elixirls.setup({
-  cmd = {path_to_elixirls},
-  capabilities = capabilities,
-  on_attach = on_attach,
-  settings = {
-    elixirLS = {
-      -- I choose to disable dialyzer for personal reasons, but
-      -- I would suggest you also disable it unless you are well
-      -- aquainted with dialzyer and know how to use it.
-      dialyzerEnabled = false,
-      -- I also choose to turn off the auto dep fetching feature.
-      -- It often get's into a weird state that requires deleting
-      -- the .elixir_ls directory and restarting your editor.
-      fetchDeps = false
-    }
-  }
-})
-lspconfig.efm.setup({
-  capabilities = capabilities,
- -- on_attach = on_attach,
-  filetypes = {"elixir"}
-})
-EOF
 set clipboard=unnamedplus
 set ttyfast
 set splitright
+set splitbelow
 let g:NERDCreateDefaultMappings = 1
 
-let g:python3_host_prog  = '/usr/local/bin/python3'
+let g:python3_host_prog  = '/opt/homebrew/bin/python3'
 let mapleader = " "
 let g:mapleader = " "
 let g:test#runner_commands = ['ExUnit']
+let g:sneak#label = 1
 
-nnoremap <silent> gd <cmd>lua vim.lsp.buf.definition()<CR>
+noremap <silent> gd <cmd>lua vim.lsp.buf.definition()<CR>
 nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
 nnoremap <silent> gD    <cmd>lua vim.lsp.buf.implementation()<CR>
 nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
@@ -236,7 +213,64 @@ nnoremap <silent> gW    <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
 nnoremap <silent> gd    <cmd>lua vim.lsp.buf.definition()<CR>
 nnoremap <silent> gf    <cmd>lua vim.lsp.buf.formatting_sync()<CR>
 nnoremap <silent> ga    <cmd>lua vim.lsp.buf.code_action()<CR>
-nnoremap <silent> gx    <cmd>lua echo ("hallo")<CR>
+nnoremap <silent> gx    <cmd>lua vim.diagnostic.open_float()<CR>
+nnoremap <silent> gn    <cmd>lua vim.lsp.buf.rename()<CR>
+nnoremap <silent> en    <cmd>lua vim.diagnostic.goto_next()<CR>
+
+" from jon
+
+" Edit vimr configuration file
+nnoremap <leader>ce :e $MYVIMRC<CR>
+" Reload vims configuration file
+
+
+
+
+nnoremap <leader>cr :source $MYVIMRC<CR>
+
+nnoremap <enter> O<Esc>j
+
+
+
+
+
+
+
+
+
+
+
+"nmap <CR> o<ESC>
+
+
+
+
+
+inoremap <C-j> <ESC>
+nnoremap <leader><leader> <c-^>
+map H ^
+map L $
+map <F1> <Esc>
+imap <F1> <Esc>
+set undodir=~/.vimdid
+set undofile
+map <leader>f :Files<CR>
+map <leader>s :Rg<CR>
+nmap <leader>b :Buffers<CR>
+nmap <leader>; A;<ESC>
+nmap <leader>_ ebi_<ESC>
+nnoremap <silent> n nzz
+nnoremap <silent> N Nzz
+nnoremap <silent> * *zz
+nnoremap <silent> # #zz
+nnoremap <silent> g* g*zz
+set mouse=a
+
+
+
+let g:rustfmt_autosave = 1
+let g:rustfmt_emit_files = 1
+let g:rustfmt_fail_silently = 0
 
 
 "autocmd BufWritePre <buffer> lua echo("hallo")<CR>
@@ -264,18 +298,16 @@ let g:test#echo_command = 0
 
 nnoremap <SPACE> <Nop>
 
-nnoremap <silent> <leader>fx :lua require('config.telescope').switch_projects()<CR>
-nnoremap <silent> <leader>fp <cmd>Telescope project<CR>
-vnoremap <leader>fv "zy:Telescope live_grep default_text=<C-r>z<cr>
+"nnoremap <silent> <leader>fx :lua require('config.telescope').switch_projects()<CR>
+"nnoremap <silent> <leader>fp <cmd>Telescope project<CR>
+"vnoremap <leader>fv "zy:Telescope live_grep default_text=<C-r>z<cr>
 " telescope
-nnoremap <leader>ff <cmd>lua require('telescope.builtin').find_files()<cr>
-nnoremap <leader>fg <cmd>lua require('telescope.builtin').live_grep()<cr>
-nnoremap <leader>fd <cmd>lua require('telescope.builtin').grep_string()<cr>
-nnoremap <leader>fb <cmd>lua require('telescope.builtin').buffers()<cr>
-nnoremap <leader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>
+"nnoremap <leader>ff <cmd>lua require('telescope.builtin').find_files()<cr>
+"nnoremap <leader>fg <cmd>lua require('telescope.builtin').live_grep()<cr>
+"nnoremap <leader>fd <cmd>lua require('telescope.builtin').grep_string()<cr>
+"nnoremap <leader>fb <cmd>lua require('telescope.builtin').buffers()<cr>
+"nnoremap <leader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>
 
-nnoremap <silent> <leader>nt :NERDTreeToggle<CR>
-nnoremap <silent> <leader>nf :NERDTreeFind<CR>
 nnoremap <silent> <S-Tab> :b#<CR>
 
 " testing
@@ -356,9 +388,10 @@ set tm=500
 " => Colors and Fonts
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Enable syntax highlighting
+set termguicolors
 
 syntax enable
-set background=light
+set background=dark
 colorscheme NeoSolarized
 
 
@@ -429,11 +462,6 @@ map k gk
 " Disable highlight when <leader><cr> is pressed
 map <silent> <leader><cr> :noh<cr>
 
-" Smart way to move between windows
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-h> <C-W>h
-map <C-l> <C-W>l
 
 " Close the current buffer
 map <leader>bd :Bclose<cr>
@@ -487,26 +515,12 @@ set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ 
 " Remap VIM 0 to first non-blank character
 map 0 ^
 
-" Move a line of text using ALT+[jk] or Comamnd+[jk] on mac
-nmap <M-j> mz:m+<cr>`z
-nmap <M-k> mz:m-2<cr>`z
-vmap <M-j> :m'>+<cr>`<my`>mzgv`yo`z
-vmap <M-k> :m'<-2<cr>`>my`<mzgv`yo`z
-
-if has("mac") || has("macunix")
-  nmap <D-j> <M-j>
-  nmap <D-k> <M-k>
-  vmap <D-j> <M-j>
-  vmap <D-k> <M-k>
-endif
 " When you press gv you vimgrep after the selected text
 vnoremap <silent> gv :call VisualSelection('gv')<CR>
 
 " Open vimgrep and put the cursor in the right position
-map <leader>g :vimgrep // **/*.<left><left><left><left><left><left><left>
 
 " Vimgreps in the current file
-map <leader><space> :vimgrep // <C-R>%<C-A><right><right><right><right><right><right><right><right><right>
 
 " When you press <leader>r you can search and replace the selected text
 vnoremap <silent> <leader>r :call VisualSelection('replace')<CR>
