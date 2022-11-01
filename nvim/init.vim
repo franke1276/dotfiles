@@ -23,6 +23,8 @@ Plug 'mhanberg/elixir.nvim'
 
 Plug 'nvim-lua/plenary.nvim'
 
+Plug 'ntpeters/vim-better-whitespace'
+
 " Snippet completion source for nvim-cmp
 Plug 'hrsh7th/cmp-vsnip'
 
