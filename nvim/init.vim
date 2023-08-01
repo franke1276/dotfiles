@@ -57,6 +57,7 @@ Plug 'arcticicestudio/nord-vim'
 Plug 'vim-test/vim-test'
 "git
 Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
 " projects
 " Plug 'nvim-telescope/telescope-project.nvim'
 " change project root
@@ -267,7 +268,7 @@ let g:mapleader = " "
 let g:test#runner_commands = ['ExUnit']
 let g:sneak#label = 1
 
-noremap <silent> gd <cmd>lua vim.lsp.buf.definition()<CR>
+"noremap <silent> gd     <cmd>lua vim.lsp.buf.definition()<CR>
 nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
 nnoremap <silent> gD    <cmd>lua vim.lsp.buf.implementation()<CR>
 nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
