@@ -42,4 +42,8 @@ layout {
       }
       pane size="15%" name="console"
   }
+  tab name="compare_python" split_direction="vertical" {
+      pane edit="src/lib.rs" name="rust"
+      pane edit="../spree_vpp/vpp.py" name="python"
+  }
 }
