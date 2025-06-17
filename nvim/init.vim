@@ -19,9 +19,17 @@ Plug 'overcache/NeoSolarized'
 " LSP completion source for nvim-cmp
 Plug 'hrsh7th/cmp-nvim-lsp'
 
+Plug 'voldikss/vim-floaterm'
+
 Plug 'nvim-lua/plenary.nvim'
+Plug 'ruifm/gitlinker.nvim'
 
 Plug 'ntpeters/vim-better-whitespace'
+
+
+Plug 'prettier/vim-prettier', { 'do': 'yarn install --frozen-lockfile --production',  'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue', 'svelte', 'yaml', 'yml', 'html'] }
+
+Plug 'nvim-treesitter/nvim-treesitter'
 
 " Snippet completion source for nvim-cmp
 Plug 'hrsh7th/cmp-vsnip'
@@ -90,6 +98,25 @@ require('nvim_comment').setup()
 local on_attach = function(_, bufnr)
    vim.cmd [[ autocmd BufWritePre <buffer> lua vim.lsp.buf.format()]]
 end
+
+require("gitlinker").setup({
+callbacks = {
+        ["github.com"] = require"gitlinker.hosts".get_github_type_url,
+        ["gitlab.com"] = require"gitlinker.hosts".get_gitlab_type_url,
+        ["try.gitea.io"] = require"gitlinker.hosts".get_gitea_type_url,
+        ["codeberg.org"] = require"gitlinker.hosts".get_gitea_type_url,
+        ["bitbucket.org"] = require"gitlinker.hosts".get_bitbucket_type_url,
+        ["try.gogs.io"] = require"gitlinker.hosts".get_gogs_type_url,
+        ["git.sr.ht"] = require"gitlinker.hosts".get_srht_type_url,
+        ["git.launchpad.net"] = require"gitlinker.hosts".get_launchpad_type_url,
+        ["repo.or.cz"] = require"gitlinker.hosts".get_repoorcz_type_url,
+        ["git.kernel.org"] = require"gitlinker.hosts".get_cgit_type_url,
+        ["git.savannah.gnu.org"] = require"gitlinker.hosts".get_cgit_type_url,
+        ["git.sonnenbatterie.de"] = require"gitlinker.hosts".get_gitlab_type_url
+  },
+mappings = "gy"
+})
+
 local lspconfig = require("lspconfig")
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -181,7 +208,9 @@ let g:mapleader = " "
 let g:test#runner_commands = ['ExUnit']
 let g:sneak#label = 1
 
-"noremap <silent> gd     <cmd>lua vim.lsp.buf.definition()<CR>
+"let g:prettier#autoformat = 1
+"let g:prettier#autoformat_require_pragma = 0
+
 nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
 nnoremap <silent> gD    <cmd>lua vim.lsp.buf.implementation()<CR>
 nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
@@ -195,6 +224,10 @@ nnoremap <silent> ga    <cmd>lua vim.lsp.buf.code_action()<CR>
 nnoremap <silent> gx    <cmd>lua vim.diagnostic.open_float()<CR>
 nnoremap <silent> gn    <cmd>lua vim.lsp.buf.rename()<CR>
 nnoremap <silent> en    <cmd>lua vim.diagnostic.goto_next()<CR>
+
+nnoremap <silent> <leader>m :FloatermNew --name=myfloat --height=0.8 --width=0.7 --autoclose=2 <CR>
+nnoremap <silent> t :FloatermToggle myfloat<CR>
+tnoremap <silent> <Esc> <C-\><C-n>:q<CR>
 
 " from jon
 

@@ -1,0 +1,64 @@
+layout {
+  cwd "~/workspace/spree-client/spree_client_rs/"
+  default_tab_template {
+    pane size=1 borderless=true {
+      plugin location="zellij:tab-bar"
+    }
+    children
+    pane size=2 borderless=true {
+      plugin location="zellij:status-bar"
+    }
+  }
+
+  tab name="dev" split_direction="vertical" focus=true{
+    pane edit="src/lib.rs" size="75%" name="IDE"
+    pane split_direction="horizontal"{
+      pane command="cargo" size="75%" {
+        args "test" "--lib"
+      }
+      pane name="console"
+    }
+  }
+  tab name="test" split_direction="vertical" {
+    pane split_direction="horizontal" size="75%"{
+      pane command="./bin/spree_client-local.sh" size="75%" start_suspended=true
+      pane name="test" command="cargo" start_suspended=true {
+        args "test" "it_spree_client_rs"
+      }
+
+    }
+    pane split_direction="horizontal"{
+      pane size="15%" name="docker-dependencies" command="./bin/dependencies.sh" start_suspended=true
+      pane name="publish" command="./bin/publish_messages_for_local_dev.sh" start_suspended=true
+    }
+  }
+  tab name="test on 179683" split_direction="vertical" {
+    pane split_direction="horizontal" size="75%"{
+      pane command="ssh" size="75%" start_suspended=true{
+        args "root@10.66.171.198" "-p" "2222"
+      }
+      pane command="ssh" start_suspended=true {
+        args "root@10.66.171.198" "-p" "2222"
+      }
+
+    }
+    pane split_direction="horizontal"{
+      pane size="5%" name="Load" command="ssh" start_suspended=true {
+        args "admin@10.32.156.100" "./start.sh"
+      }
+      pane name="other"
+    }
+  }
+  tab name="compare_python" split_direction="vertical" {
+      pane edit="src/lib.rs" name="rust"
+      pane edit="../spree_vpp/vpp.py" name="python"
+  }
+  tab name="git" split_direction="horizontal" {
+      pane command="lazygit" size="75%"
+      pane name="git"
+  }
+  tab name="local" split_direction="horizontal" {
+      pane size="75%"
+      pane 
+  }
+}
