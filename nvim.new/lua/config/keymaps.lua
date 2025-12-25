@@ -9,8 +9,6 @@ map("n", "<leader>q", "<cmd>q<cr>", opts)
 -- Insert / Normal basics
 -- =====================
 
--- Insert: Ctrl-j -> ESC
-map("i", "<C-j>", "<Esc>", opts)
 
 -- F1 niemals Hilfe öffnen
 map({ "n", "i" }, "<F1>", "<Esc>", opts)
@@ -61,3 +59,26 @@ map("n", "<leader><cr>", "<cmd>noh<cr>", opts)
 -- Paste-Mode togglen (heute selten nötig, aber 1:1)
 map("n", "<leader>pp", "<cmd>setlocal paste!<cr>", opts)
 
+
+map("i", ";;", "<C-o>A;")
+map("n", ";;", "A;<Esc>")
+
+map("i", "<C-b>", "<C-o>b") -- Wort zurück
+map("i", "<C-w>", "<C-o>w") -- Wort vor
+
+
+map("i", "<C-a>", "<C-o>^") -- erster Nicht-Whitespace
+map("i", "<C-e>", "<C-o>$") -- Zeilenende
+
+map("i", "<C-d>", "<C-o>dw") -- Wort löschen
+
+map("i", "{<CR>", "{<CR>}<Esc>O")
+
+map("i", "jk", "<Esc>", {noremap=true})
+map("i", "<C-h>", "<Left>")
+map("i", "<C-l>", "<Right>")
+map("i", "<C-j>", "<Down>")
+map("i", "<C-k>", "<Up>")
+
+map("i", "<C-n>", "<Esc>o") -- neue Zeile darunter
+map("i", "<C-p>", "<Esc>O") -- neue Zeile dadrüber
