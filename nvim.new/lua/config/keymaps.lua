@@ -22,6 +22,7 @@ map("n", "<leader><leader>", "<C-^>", opts)
 
 -- Append ; at EOL
 map("n", "<leader>;", "A;<Esc>", opts)
+map("n", "<leader>)", "A)<Esc>", opts)
 
 -- Insert _ inside word
 map("n", "<leader>_", "ebi_<Esc>", opts)
@@ -74,7 +75,7 @@ map("i", "<C-d>", "<C-o>dw") -- Wort löschen
 
 map("i", "{<CR>", "{<CR>}<Esc>O")
 
-map("i", "jk", "<Esc>", {noremap=true})
+map("i", "jj", "<Esc>", {noremap=true})
 map("i", "<C-h>", "<Left>")
 map("i", "<C-l>", "<Right>")
 map("i", "<C-j>", "<Down>")
@@ -82,3 +83,10 @@ map("i", "<C-k>", "<Up>")
 
 map("i", "<C-n>", "<Esc>o") -- neue Zeile darunter
 map("i", "<C-p>", "<Esc>O") -- neue Zeile dadrüber
+
+-- tmux nvim integration
+map("n", "<C-h>", "<cmd> TmuxNavigateLeft<CR>") 
+map("n", "<C-l>", "<cmd> TmuxNavigateRight<CR>")
+map("n", "<C-j>", "<cmd> TmuxNavigateDown<CR>")
+map("n", "<C-k>", "<cmd> TmuxNavigateUp<CR>") 
+

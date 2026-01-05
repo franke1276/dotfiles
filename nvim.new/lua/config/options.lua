@@ -24,8 +24,8 @@ opt.wildmenu = true
 opt.wildignore:append({ "*.o", "*~", "*.pyc" })
 
 -- UI
-opt.ruler = true
-opt.cmdheight = 2
+--opt.ruler = true
+--opt.cmdheight = 2
 
 -- Backspace / Wrap keys
 opt.backspace = { "eol", "start", "indent" }
@@ -72,4 +72,3 @@ opt.textwidth = 500
 opt.autoindent = true
 opt.smartindent = true
 opt.wrap = true
-

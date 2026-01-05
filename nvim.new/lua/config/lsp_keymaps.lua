@@ -23,7 +23,12 @@ local function lsp_keymaps(bufnr)
   map("n", "en", vim.diagnostic.goto_next, opts)
 
   map("n", "<leader>rt", "<cmd>RustLsp testables<cr>", { buffer = true })
-
+  map("n", "gt", function()
+      vim.cmd("RustLsp testables")
+  end, opts)
+  map("n", "<leader>q", function()
+    vim.diagnostic.setqflist()
+  end, { silent = true })
 
   -- map("n", "<leader>gr", "<cmd>RustLsp run<cr>", opts)
   -- map("n", "<leader>gd", "<cmd>RustLsp debuggables<cr>", opts)
