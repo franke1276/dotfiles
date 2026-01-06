@@ -48,8 +48,8 @@ opt.errorbells = false
 opt.visualbell = false
 
 -- Colors
-opt.termguicolors = true
-opt.background = "dark"
+-- opt.termguicolors = true
+-- opt.background = "dark"
 
 -- Encoding / fileformats
 opt.encoding = "utf-8"

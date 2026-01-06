@@ -12,11 +12,12 @@ return {
   {
     "junegunn/fzf.vim",
     dependencies = { "junegunn/fzf" },
-    cmd = { "Files", "Rg", "Buffers", "GFiles", "Helptags", "Commands" },
+    cmd = { "Files", "Rg", "Buffers", "GFiles", "Helptags", "Commands", "Lines", "BLines", "Commits" },
     keys = {
       { "<leader>f", "<cmd>Files<cr>", desc = "FZF Files" },
       { "<leader>s", "<cmd>Rg<cr>", desc = "FZF Ripgrep" },
       { "<leader>b", "<cmd>Buffers<cr>", desc = "FZF Buffers" },
+      { "<leader>l", "<cmd>Lines<cr>", desc = "FZF Lines of Buffers" },
     },
     config = function()
       -- Optional: Preview-Fenster (funktioniert gut, braucht meist keine Extras)
@@ -26,4 +27,3 @@ return {
     end,
   },
 }
-
