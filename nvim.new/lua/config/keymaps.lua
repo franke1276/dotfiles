@@ -37,14 +37,12 @@ map("n", "*", "*zz", opts)
 map("n", "#", "#zz", opts)
 map("n", "g*", "g*zz", opts)
 
--- =====================
--- FZF mappings (Plugin!)
--- =====================
--- ⚠️ Nur wenn du fzf.vim nutzt
 
-map("n", "<leader>f", "<cmd>Files<cr>", opts)
-map("n", "<leader>s", "<cmd>Rg<cr>", opts)
-map("n", "<leader>b", "<cmd>Buffers<cr>", opts)
+local builtin = require('telescope.builtin')
+
+map("n", "<leader>f", builtin.find_files, opts)
+map("n", "<leader>s", builtin.live_grep, opts)
+map("n", "<leader>b", builtin.buffers, opts)
 
 
 -- zuletzt genutzter Buffer (wie :b#)
@@ -85,8 +83,7 @@ map("i", "<C-n>", "<Esc>o") -- neue Zeile darunter
 map("i", "<C-p>", "<Esc>O") -- neue Zeile dadrüber
 
 -- tmux nvim integration
-map("n", "<C-h>", "<cmd> TmuxNavigateLeft<CR>") 
+map("n", "<C-h>", "<cmd> TmuxNavigateLeft<CR>")
 map("n", "<C-l>", "<cmd> TmuxNavigateRight<CR>")
 map("n", "<C-j>", "<cmd> TmuxNavigateDown<CR>")
-map("n", "<C-k>", "<cmd> TmuxNavigateUp<CR>") 
-
+map("n", "<C-k>", "<cmd> TmuxNavigateUp<CR>")

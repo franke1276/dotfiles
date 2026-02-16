@@ -14,3 +14,9 @@ vim.api.nvim_create_autocmd("CursorHold", {
     vim.diagnostic.open_float(nil, { focus = false })
   end,
 })
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "elixir", "eelixir", "heex", "dockerfile" },
+  callback = function(args)
+    pcall(vim.treesitter.start, args.buf)
+  end,
+})
